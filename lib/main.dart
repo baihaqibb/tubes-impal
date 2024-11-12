@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(), // Tema terang//
       darkTheme: ThemeData.dark(), // Tema gelap
-      themeMode: ThemeMode.system, // Mengatur tema sesuai dengan pengaturan sistem
       home: const LoginPage(),
     );
   }
