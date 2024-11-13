@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:simple_cal/notifications/notification.dart';
+//import 'package:simple_cal/pages/home_page.dart';
+import 'package:simple_cal/themes.dart';
+import 'package:timezone/data/latest.dart' as tz;
+>>>>>>> Stashed changes
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 
@@ -11,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+<<<<<<< Updated upstream
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -120,6 +131,12 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+=======
+      darkTheme: Themes.dark,
+      debugShowCheckedModeBanner: false,
+      title: 'SimpleCalendar :)',
+      //home: const HomePage(),
+>>>>>>> Stashed changes
     );
   }
 }
