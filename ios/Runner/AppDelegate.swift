@@ -11,12 +11,9 @@ import UIKit
       GeneratedPluginRegistrant.register(with: registry)
     }
     GeneratedPluginRegistrant.register(with: self)
-<<<<<<< Updated upstream
-=======
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
->>>>>>> Stashed changes
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

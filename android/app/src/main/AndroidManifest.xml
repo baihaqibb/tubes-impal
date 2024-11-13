@@ -7,8 +7,6 @@
         android:label="simple_cal"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-<<<<<<< Updated upstream
-=======
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
         <intent-filter>
@@ -19,7 +17,6 @@
         </intent-filter>
         </receiver>
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
->>>>>>> Stashed changes
         <activity
             android:name=".MainActivity"
             android:exported="true"
