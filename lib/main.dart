@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_cal/notifications/notification.dart';
-//import 'package:simple_cal/pages/home_page.dart';
+import 'package:simple_cal/pages/edit_page.dart';
+import 'package:simple_cal/pages/input_page.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -18,10 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      darkTheme: Themes.dark,
+      themeMode: ThemeMode.dark,
+      theme: GlobalThemeData.lightThemeData,
+      darkTheme: GlobalThemeData.darkThemeData,
       debugShowCheckedModeBanner: false,
       title: 'SimpleCalendar :)',
-      //home: const HomePage(),
+      home: const EditPage(),
     );
   }
 }
