@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_cal/themes.dart';
 
 class MyInputField extends StatelessWidget {
   final String title;
@@ -21,7 +22,7 @@ class MyInputField extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: textStyleSubheader2,
           ),
           Container(
             margin: const EdgeInsets.only(top: 10),

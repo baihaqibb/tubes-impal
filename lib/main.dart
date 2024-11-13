@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       darkTheme: GlobalThemeData.darkThemeData,
       debugShowCheckedModeBanner: false,
       title: 'SimpleCalendar :)',
-      home: const EditPage(),
+      home: const InputPage(),
     );
   }
 }
