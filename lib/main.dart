@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:simple_cal/notifications/notification.dart';
 import 'package:simple_cal/pages/home_page.dart';
-import 'package:simple_cal/pages/themes.dart';
+import 'package:simple_cal/themes.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 

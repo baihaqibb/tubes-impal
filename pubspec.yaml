@@ -39,6 +39,7 @@ dependencies:
   date_picker_timeline:
   table_calendar: ^3.1.2
   flutter_local_notifications:
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:

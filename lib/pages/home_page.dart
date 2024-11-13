@@ -1,7 +1,8 @@
 import "package:date_picker_timeline/date_picker_widget.dart";
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
-import "package:simple_cal/pages/themes.dart";
+import "package:simple_cal/notifications/notification.dart";
+import "package:simple_cal/themes.dart";
 import "package:table_calendar/table_calendar.dart";
 
 class HomePage extends StatefulWidget {
@@ -19,19 +20,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: homePageAppBar(),
-      drawer: Drawer(),
+      drawer: const Drawer(),
       body: <Widget>[
         _homePageCalendarView(),
         Column(
-          children: [_dateShown(), _datePicker()],
+          children: [
+            _dateShown(),
+            _datePicker(),
+          ],
         )
       ][currentPageIndex],
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: primary,
-        foregroundColor: Color(0xFFFAFAFA),
+        foregroundColor: const Color(0xFFFAFAFA),
         onPressed: () {},
-        label: Text("Add Event"),
-        icon: Icon(Icons.add),
+        label: const Text("Add Event"),
+        icon: const Icon(Icons.add),
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -40,7 +44,7 @@ class _HomePageState extends State<HomePage> {
           });
         },
         selectedIndex: currentPageIndex,
-        destinations: [
+        destinations: const [
           NavigationDestination(
               icon: Icon(Icons.calendar_month), label: "Calendar"),
           NavigationDestination(icon: Icon(Icons.schedule), label: "Schedule")
@@ -51,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
   Container _datePicker() {
     return Container(
-      margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
       child: DatePicker(
         DateTime.now(),
         height: 100,
@@ -59,11 +63,11 @@ class _HomePageState extends State<HomePage> {
         initialSelectedDate: DateTime.now(),
         selectionColor: primary,
         selectedTextColor: Colors.white,
-        monthTextStyle: TextStyle(
+        monthTextStyle: const TextStyle(
             fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
-        dateTextStyle: TextStyle(
+        dateTextStyle: const TextStyle(
             fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey),
-        dayTextStyle: TextStyle(
+        dayTextStyle: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey),
       ),
     );
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> {
 
   Container _dateShown() {
     return Container(
-      margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,9 +86,10 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   DateFormat.yMMMMd("en_US").format(DateTime.now()),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Text(
+                const Text(
                   "Today",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                 )
@@ -100,12 +105,13 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 40, left: 10, right: 10, bottom: 40),
+          margin:
+              const EdgeInsets.only(top: 40, left: 10, right: 10, bottom: 40),
           child: TableCalendar(
               locale: "en_US",
               rowHeight: 80,
-              headerStyle:
-                  HeaderStyle(formatButtonVisible: false, titleCentered: true),
+              headerStyle: const HeaderStyle(
+                  formatButtonVisible: false, titleCentered: true),
               availableGestures: AvailableGestures.all,
               onDaySelected: (day, focusedDay) {
                 setState(() {
@@ -113,19 +119,20 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               selectedDayPredicate: (day) => isSameDay(day, today),
-              daysOfWeekStyle: DaysOfWeekStyle(
+              daysOfWeekStyle: const DaysOfWeekStyle(
                   weekendStyle: TextStyle(color: Colors.red),
                   weekdayStyle: TextStyle()),
               calendarStyle: CalendarStyle(
-                todayDecoration: BoxDecoration(
+                todayDecoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Color(0xA09FA8DA)),
                 selectedDecoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0x00),
-                    border: Border.all(width: 3, color: Color(0xA05C6BC0))),
-                outsideTextStyle: TextStyle(color: Color(0x80A0A0A0)),
-                weekNumberTextStyle: TextStyle(color: Colors.red),
-                weekendTextStyle: TextStyle(color: Colors.red),
+                    color: const Color(0x00000000),
+                    border:
+                        Border.all(width: 3, color: const Color(0xA05C6BC0))),
+                outsideTextStyle: const TextStyle(color: Color(0x80A0A0A0)),
+                weekNumberTextStyle: const TextStyle(color: Colors.red),
+                weekendTextStyle: const TextStyle(color: Colors.red),
               ),
               startingDayOfWeek: StartingDayOfWeek.monday,
               focusedDay: today,
@@ -139,7 +146,7 @@ class _HomePageState extends State<HomePage> {
   AppBar homePageAppBar() {
     return AppBar(
       backgroundColor: primary,
-      title: Text(
+      title: const Text(
         "SimpleCalendar :)",
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
