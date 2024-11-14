@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:simple_cal/themes.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -26,11 +26,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('SimpleCalendar :)'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // Added this line
+        child: SingleChildScrollView(
+          // Added this line
           child: Form(
             key: _formKey,
             child: Column(
@@ -42,6 +44,7 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -50,20 +53,19 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                  autofocus: true,
-                  enableSuggestions: false,
-                  autocorrect: false
-                ),
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your username';
+                      }
+                      return null;
+                    },
+                    autofocus: true,
+                    enableSuggestions: false,
+                    autocorrect: false),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
