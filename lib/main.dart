@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_cal/notifications/notification.dart';
+import 'package:simple_cal/registerPage.dart';
 import 'package:simple_cal/pages/edit_page.dart';
 import 'package:simple_cal/pages/input_page.dart';
 import 'package:simple_cal/pages/home_page.dart';
