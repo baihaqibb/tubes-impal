@@ -13,14 +13,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int currentPageIndex = 1;
+  int currentPageIndex = 0;
   DateTime today = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: homePageAppBar(),
-      drawer: const Drawer(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text("Username")
+              ],
+            )),
+            ListTile(
+              title: Text("Settings"),
+            ),
+            ListTile(
+              title: Text("Log Out"),
+            )
+          ],
+        ),
+      ),
       body: <Widget>[
         _homePageCalendarView(),
         Column(
@@ -108,6 +134,7 @@ class _HomePageState extends State<HomePage> {
           margin:
               const EdgeInsets.only(top: 40, left: 10, right: 10, bottom: 40),
           child: TableCalendar(
+              weekendDays: [DateTime.sunday],
               locale: "en_US",
               rowHeight: 80,
               headerStyle: const HeaderStyle(
@@ -123,14 +150,6 @@ class _HomePageState extends State<HomePage> {
                   weekendStyle: TextStyle(color: Colors.red),
                   weekdayStyle: TextStyle()),
               calendarStyle: CalendarStyle(
-                todayDecoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: Color(0xA09FA8DA)),
-                selectedDecoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0x00000000),
-                    border:
-                        Border.all(width: 3, color: const Color(0xA05C6BC0))),
-                outsideTextStyle: const TextStyle(color: Color(0x80A0A0A0)),
                 weekNumberTextStyle: const TextStyle(color: Colors.red),
                 weekendTextStyle: const TextStyle(color: Colors.red),
               ),
