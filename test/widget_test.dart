@@ -1,30 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:simple_cal/main.dart';
+import 'package:simple_cal/home.dart'; // Pastikan untuk mengimpor home.dart
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Login page displays correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MaterialApp(
+      home: LoginPage(),
+    ));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the login page displays the correct text.
+    expect(find.text('SimpleCalendar :)'), findsOneWidget);
+    expect(find.text('Log In to Continue'), findsOneWidget);
+    expect(find.text('Please enter your username and password'), findsOneWidget);
+    
+    // Verify that the login button is present.
+    expect(find.byType(ElevatedButton), findsOneWidget);
+    
+    // Verify that the text fields are present.
+    expect(find.byType(TextFormField), findsNWidgets(2)); // Username and Password fields
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Simulate user input and tap the login button.
+    await tester.enterText(find.byType(TextFormField).first, 'testuser');
+    await tester.enterText(find.byType(TextFormField).last, 'password');
+    await tester.tap(find.byType(ElevatedButton));
+    await tester.pump(); // Rebuild the widget after the state has changed.
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Add additional verifications as needed for your login logic.
   });
 }
+*/

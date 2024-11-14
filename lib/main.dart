@@ -5,6 +5,7 @@ import 'package:simple_cal/pages/input_page.dart';
 import 'package:simple_cal/pages/home_page.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,9 +15,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
