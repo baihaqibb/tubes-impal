@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: [
+          children: const [
             DrawerHeader(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
           margin:
               const EdgeInsets.only(top: 40, left: 10, right: 10, bottom: 40),
           child: TableCalendar(
-              weekendDays: [DateTime.sunday],
+              weekendDays: const [DateTime.sunday],
               locale: "en_US",
               rowHeight: 80,
               headerStyle: const HeaderStyle(
