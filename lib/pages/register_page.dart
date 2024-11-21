@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
         case "network-request-failed":
           showErrorSnackBar("Please check your internet connection.");
           break;
-        case "Invalid email format!":
+        case "invalid-email":
           showErrorSnackBar("Invalid email format!");
           break;
         case "email-already-in-use":

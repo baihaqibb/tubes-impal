@@ -43,13 +43,13 @@ class _LoginPageState extends State<LoginPage> {
           email: _emailControl.text, password: _passwordControl.text);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
-        case "invalid-email":
+        case "network-request-failed":
           showErrorSnackBar("Please check your internet connection.");
           break;
-        case "Invalid email format!":
+        case "invalid-email":
           showErrorSnackBar("Invalid email format!");
           break;
-        case "Invalid email or password!":
+        case "invalid-credential":
           showErrorSnackBar("Invalid email or password!");
           break;
         default:
