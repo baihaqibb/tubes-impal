@@ -4,7 +4,7 @@ const Color primary = Color(0xFF975EFF);
 const Color secondaryL = Color(0xFFF3F4F4);
 const Color secondaryD = Color(0xFF262626);
 const Color success = Color(0xFF00A01A);
-const Color danger = Color(0xFFFF0050);
+const Color danger = Colors.redAccent;
 
 const TextStyle textStyleTitle =
     TextStyle(fontSize: 24, fontWeight: FontWeight.bold);

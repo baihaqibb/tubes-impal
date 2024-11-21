@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_cal/themes.dart';
 
@@ -10,15 +11,61 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _emailControl = TextEditingController();
+  final _passwordControl = TextEditingController();
+  final _confirmPasswordControll = TextEditingController();
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: danger,
+    ));
+  }
+
+  void registerAcc() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailControl.text, password: _passwordControl.text);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "network-request-failed":
+          showErrorSnackBar("Please check your internet connection.");
+          break;
+        case "Invalid email format!":
+          showErrorSnackBar("Invalid email format!");
+          break;
+        case "email-already-in-use":
+          showErrorSnackBar("Email is already in use with another account!");
+          break;
+        default:
+          showErrorSnackBar("Something went wrong :( \nError code: ${e.code}");
+      }
+    }
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _emailControl.dispose();
+    _passwordControl.dispose();
+    _confirmPasswordControll.dispose();
     super.dispose();
   }
 
@@ -48,18 +95,18 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Please enter your username and password for your account',
+                  'Please enter your email and password for your account',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                    controller: _usernameController,
+                    controller: _emailControl,
                     decoration: const InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Email',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your username';
+                        return 'Please enter your email';
                       }
                       return null;
                     },
@@ -68,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     autocorrect: false),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: _passwordController,
+                  controller: _passwordControl,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Password',
@@ -77,12 +124,18 @@ class _RegisterPageState extends State<RegisterPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     }
+                    if (value.length < 6) {
+                      return 'Password length must be more than 6 characters';
+                    }
+                    if (value.length > 4096) {
+                      return 'Password is too long';
+                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: _confirmPasswordController,
+                  controller: _confirmPasswordControll,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Confirm Password',
@@ -91,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please confirm your password';
                     }
-                    if (value != _passwordController.text) {
+                    if (value != _passwordControl.text) {
                       return 'Passwords do not match';
                     }
                     return null;
@@ -101,13 +154,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      // Process the registration
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
-                      );
+                      registerAcc();
                     }
                   },
-                  child: const Text('Register'),
+                  child: const Text('Register', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

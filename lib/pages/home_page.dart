@@ -1,7 +1,9 @@
 import "package:date_picker_timeline/date_picker_widget.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
 import "package:simple_cal/notifications/notification.dart";
+import "package:simple_cal/pages/input_page.dart";
 import "package:simple_cal/themes.dart";
 import "package:table_calendar/table_calendar.dart";
 
@@ -16,6 +18,15 @@ class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
   DateTime today = DateTime.now();
 
+  final logoutSnackbar = SnackBar(content: Text("User logged out"));
+
+  final user = FirebaseAuth.instance.currentUser!;
+
+  void logout() {
+    FirebaseAuth.instance.signOut();
+    ScaffoldMessenger.of(context).showSnackBar(logoutSnackbar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +34,7 @@ class _HomePageState extends State<HomePage> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: const [
+          children: [
             DrawerHeader(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,14 +46,17 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 20,
                 ),
-                Text("Username")
+                Text(user.email!)
               ],
             )),
             ListTile(
               title: Text("Settings"),
+              leading: Icon(Icons.settings),
             ),
             ListTile(
               title: Text("Log Out"),
+              leading: Icon(Icons.logout),
+              onTap: logout,
             )
           ],
         ),
@@ -59,7 +73,10 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: primary,
         foregroundColor: const Color(0xFFFAFAFA),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const InputPage()));
+        },
         label: const Text("Add Event"),
         icon: const Icon(Icons.add),
       ),

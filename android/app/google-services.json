@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "433444468119",
+    "project_id": "tubes-impal-260ad",
+    "storage_bucket": "tubes-impal-260ad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433444468119:android:f931603219d8989c8f00d2",
+        "android_client_info": {
+          "package_name": "com.example.simple_cal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSVztxo9CKce-CYRwdaeztOjbYQMqfaZM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
