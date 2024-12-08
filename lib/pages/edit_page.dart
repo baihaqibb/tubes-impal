@@ -445,7 +445,7 @@ class _EditPageState extends State<EditPage> {
   MyInputField _titleInputField() {
     return MyInputField(
       controller: _titleControl,
-      title: "Input",
+      title: "Title",
       hint: "e.g. Software Implementation Class",
     );
   }

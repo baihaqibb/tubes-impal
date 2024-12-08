@@ -413,7 +413,7 @@ class _InputPageState extends State<InputPage> {
   MyInputField _titleInputField() {
     return MyInputField(
       controller: _titleControl,
-      title: "Input",
+      title: "Title",
       hint: "e.g. Software Implementation Class",
     );
   }
