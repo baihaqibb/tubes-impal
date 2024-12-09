@@ -1,6 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_cal/services/firestore.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_cal/widgets/input_field.dart';
@@ -13,7 +15,10 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
-  DateTime _selectedDate = DateTime.now();
+  final FirestoreService firestoreService = FirestoreService();
+
+  DateTime _selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String _startTime = DateFormat.Hm().format(DateTime.now()).toString();
   String _endTime = DateFormat.Hm().format(DateTime.now()).toString();
   bool _reminderSwitch = true;
@@ -40,6 +45,18 @@ class _InputPageState extends State<InputPage> {
   final _reminderControl = TextEditingController();
   final _repeatControl = TextEditingController();
   final _repeatUntilControl = TextEditingController();
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: danger,
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -257,7 +274,29 @@ class _InputPageState extends State<InputPage> {
         height: 50,
         child: ElevatedButton(
           iconAlignment: IconAlignment.start,
-          onPressed: () {},
+          onPressed: () {
+            try {
+              firestoreService.addEvent(
+                  user: FirebaseAuth.instance.currentUser!.uid,
+                  title: _titleControl.text.trim(),
+                  date: _selectedDate,
+                  startTime: _startTime.trim(),
+                  endTime: _endTime.trim(),
+                  note: _noteControl.text.trim(),
+                  reminder: _reminderSwitch,
+                  reminderUrgency: _urgencyControl.text.trim(),
+                  reminderBefore: _selectedReminder,
+                  repeat: _repeatSwitch,
+                  repeatInterval: _repeatControl.text.trim(),
+                  repeatUntil: _selectedUntilDate);
+            } catch (e) {
+              showErrorSnackBar(e.toString());
+            }
+
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
           style: ElevatedButton.styleFrom(
               backgroundColor: primary,
               shape: RoundedRectangleBorder(

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_cal/pages/home_page.dart';
-import 'package:simple_cal/pages/login_page.dart';
 import 'package:simple_cal/themes.dart';
 
 class VerificationPage extends StatefulWidget {

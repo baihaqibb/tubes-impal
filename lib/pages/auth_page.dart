@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_cal/pages/home_page.dart';
 import 'package:simple_cal/pages/login_page.dart';
 import 'package:simple_cal/pages/verification_page.dart';
 
@@ -14,9 +13,9 @@ class AuthPage extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return VerificationPage();
+              return const VerificationPage();
             } else {
-              return LoginPage();
+              return const LoginPage();
             }
           }),
     );
