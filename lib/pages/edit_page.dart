@@ -1,18 +1,23 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_cal/services/firestore.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_cal/widgets/input_field.dart';
 
 class EditPage extends StatefulWidget {
-  const EditPage({super.key});
+  const EditPage({super.key, required this.event});
+  final DocumentSnapshot event;
 
   @override
   State<EditPage> createState() => _EditPageState();
 }
 
 class _EditPageState extends State<EditPage> {
+  FirestoreService firestoreService = FirestoreService();
   DateTime _selectedDate = DateTime.now();
   String _startTime = DateFormat.Hm().format(DateTime.now()).toString();
   String _endTime = DateFormat.Hm().format(DateTime.now()).toString();
@@ -21,15 +26,15 @@ class _EditPageState extends State<EditPage> {
   List<String> urgencyList = ["Weak", "Medium", "Strong"];
   int _selectedReminder = 15;
   List<int> reminderList = [5, 10, 15, 30, 60];
-  bool _repeatSwitch = false;
-  String _selectedRepeat = "Daily";
-  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
-  DateTime _selectedUntilDate = DateTime.now();
+//  bool _repeatSwitch = false;
+//  String _selectedRepeat = "Daily";
+//  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
+//  DateTime _selectedUntilDate = DateTime.now();
 
   String _selectedUrgencyPrev = "Medium";
   int _selectedReminderPrev = 15;
-  String _selectedRepeatPrev = "Daily";
-  DateTime _selectedUntilDatePrev = DateTime.now();
+//  String _selectedRepeatPrev = "Daily";
+//  DateTime _selectedUntilDatePrev = DateTime.now();
 
   final _titleControl = TextEditingController();
   final _dateControl = TextEditingController();
@@ -38,22 +43,67 @@ class _EditPageState extends State<EditPage> {
   final _noteControl = TextEditingController();
   final _urgencyControl = TextEditingController();
   final _reminderControl = TextEditingController();
-  final _repeatControl = TextEditingController();
-  final _repeatUntilControl = TextEditingController();
+//  final _repeatControl = TextEditingController();
+//  final _repeatUntilControl = TextEditingController();
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: danger,
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    _dateControl.text = DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());
-    _startTimeControl.text = DateFormat.Hm().format(DateTime.now()).toString();
-    _endTimeControl.text = DateFormat.Hm()
-        .format(DateTime.now().add(const Duration(hours: 3)))
-        .toString();
-    _urgencyControl.text = "Medium";
-    _reminderControl.text = "15 mins";
-    _repeatControl.text = "Daily";
-    _repeatUntilControl.text =
-        DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());
+
+    DocumentSnapshot data = widget.event;
+
+    _titleControl.text = data['title'];
+    _selectedDate = data['date'].toDate();
+    _dateControl.text = DateFormat("EEEE, dd MMMM yyyy").format(_selectedDate);
+    _startTimeControl.text = data['start_time'];
+    _startTime = data['start_time'];
+    _endTimeControl.text = data['end_time'];
+    _endTime = data['end_time'];
+    _noteControl.text = data['note'];
+    _reminderSwitch = data['reminder'];
+    _selectedUrgency = data['reminder_urgency'] ?? 'medium';
+    _urgencyControl.text = _selectedUrgency;
+    _selectedReminder = data['reminder_before'] ?? 15;
+    _reminderControl.text = _selectedReminder >= 60
+        ? (_selectedReminder ~/ 60).toString() +
+            (_selectedReminder ~/ 60 == 1 ? " hour" : " hours")
+        : _selectedReminder.toString() +
+            (_selectedReminder == 1 ? " min" : " mins");
+//    _repeatSwitch = data['repeat'];
+//    _selectedRepeat = data['repeat_interval'] ?? 'Daily';
+//    _repeatControl.text = _selectedRepeat;
+//   _selectedUntilDate = data['repeat_until'] == Null
+//        ? data['repeat_until'].toDate()
+//        : DateTime.now();
+//    _repeatUntilControl.text =
+//        DateFormat("dd/MM/yy").format(_selectedUntilDate);
+    /*
+      showErrorSnackBar(e.toString());
+      Navigator.pop(context);
+      _dateControl.text =
+          DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());
+      _startTimeControl.text =
+          DateFormat.Hm().format(DateTime.now()).toString();
+      _endTimeControl.text = DateFormat.Hm()
+          .format(DateTime.now().add(const Duration(hours: 3)))
+          .toString();
+      _urgencyControl.text = "Medium";
+      _reminderControl.text = "15 mins";
+      _repeatControl.text = "Daily";
+      _repeatUntilControl.text =
+          DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());*/
   }
 
   @override
@@ -103,6 +153,7 @@ class _EditPageState extends State<EditPage> {
             const SizedBox(
               height: 20,
             ),
+            /*
             const Divider(),
             _repeatInputToggle(),
             if (_repeatSwitch)
@@ -119,6 +170,7 @@ class _EditPageState extends State<EditPage> {
                   ),
                 ],
               ),
+              */
             const SizedBox(
               height: 30,
             ),
@@ -133,6 +185,7 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
+/*
   Row _repeatInputToggle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +220,7 @@ class _EditPageState extends State<EditPage> {
       ],
     );
   }
-
+*/
   Row _reminderInputToggle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,6 +259,7 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
+/*
   MyInputField _repeatUntilInputField() {
     return MyInputField(
       controller: _repeatUntilControl,
@@ -213,7 +267,7 @@ class _EditPageState extends State<EditPage> {
       hint: DateFormat("dd/MM/yy").format(DateTime.now()),
       widget: IconButton(
           onPressed: () {
-            _getUntilDateFromUser();
+            _getUntilDateFromUser(_selectedRepeat);
           },
           icon: const Icon(
             Icons.calendar_today_outlined,
@@ -221,7 +275,7 @@ class _EditPageState extends State<EditPage> {
           )),
     );
   }
-
+*/
   MyInputField _urgencyInputField() {
     return MyInputField(
       controller: _urgencyControl,
@@ -261,7 +315,39 @@ class _EditPageState extends State<EditPage> {
         margin: const EdgeInsets.only(bottom: 40),
         child: ElevatedButton(
           iconAlignment: IconAlignment.start,
-          onPressed: () {},
+          onPressed: () {
+            showDialog<String>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Delete Event"),
+                content: Text(
+                    "Are you sure you want to delete ${widget.event['title']}?"),
+                actions: <Widget>[
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel")),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        try {
+                          firestoreService.deleteEvent(event: widget.event);
+                        } catch (e) {
+                          showErrorSnackBar(e.toString());
+                        }
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text(
+                        "Delete",
+                        style: TextStyle(color: danger),
+                      ))
+                ],
+              ),
+            );
+          },
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
               shape: RoundedRectangleBorder(
@@ -289,7 +375,30 @@ class _EditPageState extends State<EditPage> {
         height: 50,
         child: ElevatedButton(
           iconAlignment: IconAlignment.start,
-          onPressed: () {},
+          onPressed: () {
+            try {
+              firestoreService.editEvent(
+                  event: widget.event,
+                  user: FirebaseAuth.instance.currentUser!.uid,
+                  title: _titleControl.text.trim(),
+                  date: _selectedDate,
+                  startTime: _startTime.trim(),
+                  endTime: _endTime.trim(),
+                  note: _noteControl.text.trim(),
+                  reminder: _reminderSwitch,
+                  reminderUrgency: _urgencyControl.text.trim(),
+                  reminderBefore: _selectedReminder); //,
+              //repeat: _repeatSwitch,
+              //repeatInterval: _repeatControl.text.trim(),
+              //repeatUntil: _selectedUntilDate);
+            } catch (e) {
+              showErrorSnackBar(e.toString());
+            }
+
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
           style: ElevatedButton.styleFrom(
               backgroundColor: primary,
               shape: RoundedRectangleBorder(
@@ -311,6 +420,7 @@ class _EditPageState extends State<EditPage> {
         ));
   }
 
+/*
   MyInputField _repeatInputField() {
     return MyInputField(
       controller: _repeatControl,
@@ -343,7 +453,7 @@ class _EditPageState extends State<EditPage> {
       ),
     );
   }
-
+*/
   MyInputField _reminderInputField() {
     return MyInputField(
       controller: _reminderControl,
@@ -473,6 +583,13 @@ class _EditPageState extends State<EditPage> {
     if (_pickerDate != null) {
       setState(() {
         _selectedDate = _pickerDate;
+        /*
+        if (_selectedUntilDate.isBefore(_selectedDate)) {
+          _repeatUntilControl.text =
+              DateFormat("dd/MM/yy").format(_selectedDate);
+          _selectedUntilDate = _selectedDate;
+        }
+        */
         _dateControl.text = DateFormat("EEEE, dd MMMM y").format(_pickerDate);
       });
     } else {
@@ -480,14 +597,21 @@ class _EditPageState extends State<EditPage> {
     }
   }
 
-  _getUntilDateFromUser() async {
+/*
+  _getUntilDateFromUser(String interval) async {
     DateTime? _pickerDate = await showDatePicker(
         context: context,
         initialDate: _selectedUntilDate,
         firstDate: DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day),
-        lastDate: DateTime(DateTime.now().year + 10, DateTime.now().month,
-            DateTime.now().day));
+            _selectedDate.year, _selectedDate.month, _selectedDate.day),
+        lastDate: interval == 'Daily'
+            ? DateTime(
+                _selectedDate.year, _selectedDate.month + 1, _selectedDate.day)
+            : interval == 'Weekly'
+                ? DateTime(_selectedDate.year, _selectedDate.month + 6,
+                    _selectedDate.day)
+                : DateTime(_selectedDate.year + 1, _selectedDate.month,
+                    _selectedDate.day));
 
     if (_pickerDate != null) {
       setState(() {
@@ -499,9 +623,9 @@ class _EditPageState extends State<EditPage> {
       print("something went wrong womp womp :(");
     }
   }
-
+*/
   _getTimeFromUser({required bool isStartTime}) async {
-    var pickedTime = await _showTimePicker();
+    var pickedTime = await _showTimePicker(isStartTime);
     if (pickedTime == null) {
       print("cancelled");
     } else if (isStartTime) {
@@ -519,11 +643,16 @@ class _EditPageState extends State<EditPage> {
     }
   }
 
-  _showTimePicker() {
+  _showTimePicker(bool isStartTime) {
     return showTimePicker(
         initialEntryMode: TimePickerEntryMode.dial,
         context: context,
-        initialTime: TimeOfDay(
-            hour: TimeOfDay.now().hour, minute: TimeOfDay.now().minute));
+        initialTime: isStartTime
+            ? TimeOfDay(
+                hour: int.parse(_startTime.split(":")[0]),
+                minute: int.parse(_startTime.split(":")[1]))
+            : TimeOfDay(
+                hour: int.parse(_endTime.split(":")[0]),
+                minute: int.parse(_endTime.split(":")[1])));
   }
 }

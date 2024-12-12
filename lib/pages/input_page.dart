@@ -8,7 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:simple_cal/widgets/input_field.dart';
 
 class InputPage extends StatefulWidget {
-  const InputPage({super.key});
+  const InputPage({super.key, required this.calendarDate});
+  final DateTime calendarDate;
 
   @override
   State<InputPage> createState() => _InputPageState();
@@ -20,21 +21,22 @@ class _InputPageState extends State<InputPage> {
   DateTime _selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String _startTime = DateFormat.Hm().format(DateTime.now()).toString();
-  String _endTime = DateFormat.Hm().format(DateTime.now()).toString();
+  String _endTime =
+      DateFormat.Hm().format(DateTime.now().add(Duration(hours: 3))).toString();
   bool _reminderSwitch = true;
   String _selectedUrgency = "Medium";
   List<String> urgencyList = ["Weak", "Medium", "Strong"];
   int _selectedReminder = 15;
   List<int> reminderList = [5, 10, 15, 30, 60];
-  bool _repeatSwitch = false;
-  String _selectedRepeat = "Daily";
-  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
-  DateTime _selectedUntilDate = DateTime.now();
+//  bool _repeatSwitch = false;
+//  String _selectedRepeat = "Daily";
+//  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
+//  DateTime _selectedUntilDate = DateTime.now();
 
   String _selectedUrgencyPrev = "Medium";
   int _selectedReminderPrev = 15;
-  String _selectedRepeatPrev = "Daily";
-  DateTime _selectedUntilDatePrev = DateTime.now();
+//  String _selectedRepeatPrev = "Daily";
+//  DateTime _selectedUntilDatePrev = DateTime.now();
 
   final _titleControl = TextEditingController();
   final _dateControl = TextEditingController();
@@ -43,8 +45,8 @@ class _InputPageState extends State<InputPage> {
   final _noteControl = TextEditingController();
   final _urgencyControl = TextEditingController();
   final _reminderControl = TextEditingController();
-  final _repeatControl = TextEditingController();
-  final _repeatUntilControl = TextEditingController();
+//  final _repeatControl = TextEditingController();
+//  final _repeatUntilControl = TextEditingController();
 
   void showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -61,16 +63,21 @@ class _InputPageState extends State<InputPage> {
   @override
   void initState() {
     super.initState();
-    _dateControl.text = DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());
+    _selectedDate = DateTime(widget.calendarDate.year,
+        widget.calendarDate.month, widget.calendarDate.day);
+    _dateControl.text =
+        DateFormat("EEEE, dd MMMM yyyy").format(widget.calendarDate);
     _startTimeControl.text = DateFormat.Hm().format(DateTime.now()).toString();
     _endTimeControl.text = DateFormat.Hm()
         .format(DateTime.now().add(const Duration(hours: 3)))
         .toString();
     _urgencyControl.text = "Medium";
     _reminderControl.text = "15 mins";
-    _repeatControl.text = "Daily";
-    _repeatUntilControl.text =
-        DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now());
+//    _repeatControl.text = "Daily";
+//    _selectedUntilDate = widget.calendarDate;
+//  _repeatUntilControl.text =
+//        DateFormat("EEEE, dd MMMM yyyy").format(widget.calendarDate);
+//    _selectedUntilDatePrev = widget.calendarDate;
   }
 
   @override
@@ -120,7 +127,7 @@ class _InputPageState extends State<InputPage> {
             const SizedBox(
               height: 20,
             ),
-            const Divider(),
+            /*const Divider(),
             _repeatInputToggle(),
             if (_repeatSwitch)
               Row(
@@ -136,6 +143,7 @@ class _InputPageState extends State<InputPage> {
                   ),
                 ],
               ),
+              */
             const SizedBox(
               height: 30,
             ),
@@ -146,6 +154,7 @@ class _InputPageState extends State<InputPage> {
     );
   }
 
+/*
   Row _repeatInputToggle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +189,7 @@ class _InputPageState extends State<InputPage> {
       ],
     );
   }
-
+*/
   Row _reminderInputToggle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -219,14 +228,15 @@ class _InputPageState extends State<InputPage> {
     );
   }
 
+/*
   MyInputField _repeatUntilInputField() {
     return MyInputField(
       controller: _repeatUntilControl,
       title: "Until",
-      hint: DateFormat("dd/MM/yy").format(DateTime.now()),
+      hint: DateFormat("dd/MM/yy").format(widget.calendarDate),
       widget: IconButton(
           onPressed: () {
-            _getUntilDateFromUser();
+            _getUntilDateFromUser(_selectedRepeat);
           },
           icon: const Icon(
             Icons.calendar_today_outlined,
@@ -234,7 +244,7 @@ class _InputPageState extends State<InputPage> {
           )),
     );
   }
-
+*/
   MyInputField _urgencyInputField() {
     return MyInputField(
       controller: _urgencyControl,
@@ -276,6 +286,7 @@ class _InputPageState extends State<InputPage> {
           iconAlignment: IconAlignment.start,
           onPressed: () {
             try {
+              //if (!_repeatSwitch) {
               firestoreService.addEvent(
                   user: FirebaseAuth.instance.currentUser!.uid,
                   title: _titleControl.text.trim(),
@@ -285,10 +296,42 @@ class _InputPageState extends State<InputPage> {
                   note: _noteControl.text.trim(),
                   reminder: _reminderSwitch,
                   reminderUrgency: _urgencyControl.text.trim(),
-                  reminderBefore: _selectedReminder,
-                  repeat: _repeatSwitch,
-                  repeatInterval: _repeatControl.text.trim(),
-                  repeatUntil: _selectedUntilDate);
+                  reminderBefore: _selectedReminder); //,
+              //repeat: _repeatSwitch,
+              //repeatInterval: _repeatControl.text.trim(),
+              //repeatUntil: _selectedUntilDate);
+              /*} else {
+                DateTime iterator = _selectedDate;
+                Duration duration = Duration(seconds: 0);
+                switch (_selectedRepeat) {
+                  case "Daily":
+                    duration = Duration(days: 1);
+                    break;
+                  case "Weekly":
+                    duration = Duration(days: 7);
+                    break;
+                  case "Monthly":
+                    duration = Duration(days: 30);
+                    break;
+                }
+                while (!iterator.isAfter(_selectedUntilDate)) {
+                  print(iterator);
+                  firestoreService.addEvent(
+                      user: FirebaseAuth.instance.currentUser!.uid,
+                      title: _titleControl.text.trim(),
+                      date: iterator,
+                      startTime: _startTime.trim(),
+                      endTime: _endTime.trim(),
+                      note: _noteControl.text.trim(),
+                      reminder: _reminderSwitch,
+                      reminderUrgency: _urgencyControl.text.trim(),
+                      reminderBefore: _selectedReminder,
+                      repeat: _repeatSwitch,
+                      repeatInterval: _repeatControl.text.trim(),
+                      repeatUntil: _selectedUntilDate);
+                  iterator = iterator.add(duration);
+                }
+              }*/
             } catch (e) {
               showErrorSnackBar(e.toString());
             }
@@ -318,6 +361,7 @@ class _InputPageState extends State<InputPage> {
         ));
   }
 
+/*
   MyInputField _repeatInputField() {
     return MyInputField(
       controller: _repeatControl,
@@ -350,7 +394,7 @@ class _InputPageState extends State<InputPage> {
       ),
     );
   }
-
+*/
   MyInputField _reminderInputField() {
     return MyInputField(
       controller: _reminderControl,
@@ -480,6 +524,11 @@ class _InputPageState extends State<InputPage> {
     if (_pickerDate != null) {
       setState(() {
         _selectedDate = _pickerDate;
+        /*if (_selectedUntilDate.isBefore(_selectedDate)) {
+          _repeatUntilControl.text =
+              DateFormat("dd/MM/yy").format(_selectedDate);
+          _selectedUntilDate = _selectedDate;
+        }*/
         _dateControl.text = DateFormat("EEEE, dd MMMM y").format(_pickerDate);
       });
     } else {
@@ -487,14 +536,21 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  _getUntilDateFromUser() async {
+/*
+  _getUntilDateFromUser(String interval) async {
     DateTime? _pickerDate = await showDatePicker(
         context: context,
         initialDate: _selectedUntilDate,
         firstDate: DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day),
-        lastDate: DateTime(DateTime.now().year + 10, DateTime.now().month,
-            DateTime.now().day));
+            _selectedDate.year, _selectedDate.month, _selectedDate.day),
+        lastDate: interval == 'Daily'
+            ? DateTime(
+                _selectedDate.year, _selectedDate.month + 1, _selectedDate.day)
+            : interval == 'Weekly'
+                ? DateTime(_selectedDate.year, _selectedDate.month + 6,
+                    _selectedDate.day)
+                : DateTime(_selectedDate.year + 1, _selectedDate.month,
+                    _selectedDate.day));
 
     if (_pickerDate != null) {
       setState(() {
@@ -506,7 +562,7 @@ class _InputPageState extends State<InputPage> {
       print("something went wrong womp womp :(");
     }
   }
-
+*/
   _getTimeFromUser({required bool isStartTime}) async {
     var pickedTime = await _showTimePicker();
     if (pickedTime == null) {

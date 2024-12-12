@@ -23,12 +23,18 @@ class _HomePageState extends State<HomePage> {
   DateTime today =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-  final logoutSnackbar = SnackBar(content: Text("User logged out"));
+  final logoutSnackbar = const SnackBar(content: Text("User logged out"));
 
   final user = FirebaseAuth.instance.currentUser!;
 
   DateTime _selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return -((to.difference(from).inHours / 24).round());
+  }
 
   void logout() {
     FirebaseAuth.instance.signOut();
@@ -48,16 +54,16 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 30,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Text(user.email!)
               ],
             )),
-            ListTile(
+            const ListTile(
               title: Text("Settings"),
               leading: Icon(Icons.settings),
             ),
@@ -100,6 +106,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Expanded(
                             child: EventCard(
+                              event: snapshot.data!.docs[index],
                               title: snapshot.data!.docs[index]['title'],
                               note: snapshot.data!.docs[index]['note'],
                               time: snapshot.data!.docs[index]['start_time'] +
@@ -121,8 +128,12 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: primary,
               foregroundColor: const Color(0xFFFAFAFA),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const InputPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => InputPage(
+                              calendarDate: today,
+                            )));
               },
               label: const Icon(Icons.add),
             ),
@@ -149,7 +160,7 @@ class _HomePageState extends State<HomePage> {
         DateTime.now(),
         height: 100,
         width: 80,
-        initialSelectedDate: today,
+        initialSelectedDate: _selectedDate,
         selectionColor: primary,
         selectedTextColor: Colors.white,
         monthTextStyle: const TextStyle(
@@ -180,12 +191,16 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat.yMMMMd("en_US").format(DateTime.now()),
+                  DateFormat("d MMMM yyyy").format(_selectedDate),
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const Text(
-                  "Today",
+                Text(
+                  daysBetween(_selectedDate, DateTime.now()) == 0
+                      ? "Today"
+                      : daysBetween(_selectedDate, DateTime.now()) == 1
+                          ? "Tomorrow"
+                          : "${daysBetween(_selectedDate, DateTime.now())} days after",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                 )
               ],
@@ -193,8 +208,11 @@ class _HomePageState extends State<HomePage> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const InputPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          InputPage(calendarDate: _selectedDate)));
             },
             style: ElevatedButton.styleFrom(
                 backgroundColor: primary,

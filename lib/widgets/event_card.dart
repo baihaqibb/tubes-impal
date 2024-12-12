@@ -1,23 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_cal/pages/edit_page.dart';
 import 'package:simple_cal/themes.dart';
 
 class EventCard extends StatelessWidget {
+  final DocumentSnapshot event;
   final String title;
   final String note;
   final String time;
-  const EventCard({
-    super.key,
-    required this.title,
-    required this.note,
-    required this.time,
-  });
+  final String? size;
+  const EventCard(
+      {super.key,
+      required this.event,
+      required this.title,
+      required this.note,
+      required this.time,
+      this.size});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const EditPage())),
+          context,
+          MaterialPageRoute(
+              builder: (context) => EditPage(
+                    event: event,
+                  ))),
       child: Container(
         margin: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -60,11 +68,11 @@ class EventCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.schedule,
                     size: 14,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 7,
                   ),
                   Text(
