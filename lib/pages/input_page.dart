@@ -1,11 +1,15 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_cal/services/alarm.dart';
 import 'package:simple_cal/services/firestore.dart';
+import 'package:simple_cal/services/notification.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_cal/widgets/input_field.dart';
+import 'package:uuid/uuid.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({super.key, required this.calendarDate});
@@ -24,8 +28,8 @@ class _InputPageState extends State<InputPage> {
   String _endTime =
       DateFormat.Hm().format(DateTime.now().add(Duration(hours: 3))).toString();
   bool _reminderSwitch = true;
-  String _selectedUrgency = "Medium";
-  List<String> urgencyList = ["Weak", "Medium", "Strong"];
+  String _selectedUrgency = "Notify";
+  List<String> urgencyList = ["Notify", "Alarm"];
   int _selectedReminder = 15;
   List<int> reminderList = [5, 10, 15, 30, 60];
 //  bool _repeatSwitch = false;
@@ -33,7 +37,7 @@ class _InputPageState extends State<InputPage> {
 //  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
 //  DateTime _selectedUntilDate = DateTime.now();
 
-  String _selectedUrgencyPrev = "Medium";
+  String _selectedUrgencyPrev = "Notify";
   int _selectedReminderPrev = 15;
 //  String _selectedRepeatPrev = "Daily";
 //  DateTime _selectedUntilDatePrev = DateTime.now();
@@ -71,7 +75,7 @@ class _InputPageState extends State<InputPage> {
     _endTimeControl.text = DateFormat.Hm()
         .format(DateTime.now().add(const Duration(hours: 3)))
         .toString();
-    _urgencyControl.text = "Medium";
+    _urgencyControl.text = "Notify";
     _reminderControl.text = "15 mins";
 //    _repeatControl.text = "Daily";
 //    _selectedUntilDate = widget.calendarDate;
@@ -286,8 +290,10 @@ class _InputPageState extends State<InputPage> {
           iconAlignment: IconAlignment.start,
           onPressed: () {
             try {
+              final id = const Uuid().v4();
               //if (!_repeatSwitch) {
               firestoreService.addEvent(
+                  id: id,
                   user: FirebaseAuth.instance.currentUser!.uid,
                   title: _titleControl.text.trim(),
                   date: _selectedDate,
@@ -295,6 +301,7 @@ class _InputPageState extends State<InputPage> {
                   endTime: _endTime.trim(),
                   note: _noteControl.text.trim(),
                   reminder: _reminderSwitch,
+                  reminderID: _reminderSwitch ? id.hashCode : null,
                   reminderUrgency: _urgencyControl.text.trim(),
                   reminderBefore: _selectedReminder); //,
               //repeat: _repeatSwitch,
@@ -332,6 +339,30 @@ class _InputPageState extends State<InputPage> {
                   iterator = iterator.add(duration);
                 }
               }*/
+              if (_reminderSwitch) {
+                if (_selectedUrgency == "Notify") {
+                  NotificationService.scheduleNotification(
+                      id.hashCode,
+                      _titleControl.text.trim(),
+                      "${_startTime.trim()} - ${_endTime.trim()}\n${_noteControl.text.trim()}",
+                      _selectedDate
+                          .add(Duration(
+                              hours: int.parse(_startTime.split(":")[0]),
+                              minutes: int.parse(_startTime.split(":")[1])))
+                          .subtract(Duration(minutes: _selectedReminder)));
+                } /* else if (_selectedUrgency == "Alarm") {
+                  AlarmService.setAlarm(
+                      id: id.hashCode,
+                      title: _titleControl.text.trim(),
+                      body:
+                          "${_startTime.trim()} - ${_endTime.trim()}\n${_noteControl.text.trim()}",
+                      dateTime: _selectedDate
+                          .add(Duration(
+                              hours: int.parse(_startTime.split(":")[0]),
+                              minutes: int.parse(_startTime.split(":")[1])))
+                          .subtract(Duration(minutes: _selectedReminder)));
+                } */
+              }
             } catch (e) {
               showErrorSnackBar(e.toString());
             }
@@ -564,17 +595,19 @@ class _InputPageState extends State<InputPage> {
   }
 */
   _getTimeFromUser({required bool isStartTime}) async {
-    var pickedTime = await _showTimePicker();
+    var pickedTime = await _showTimePicker(isStartTime);
     if (pickedTime == null) {
       print("cancelled");
     } else if (isStartTime) {
-      String _formattedTime = pickedTime.format(context);
+      String _formattedTime =
+          "${pickedTime.hour.toString().padLeft(2, "0")}:${pickedTime.minute.toString().padLeft(2, "0")}";
       setState(() {
         _startTime = _formattedTime;
         _startTimeControl.text = _startTime;
       });
     } else if (!isStartTime) {
-      String _formattedTime = pickedTime.format(context);
+      String _formattedTime =
+          "${pickedTime.hour.toString().padLeft(2, "0")}:${pickedTime.minute.toString().padLeft(2, "0")}";
       setState(() {
         _endTime = _formattedTime;
         _endTimeControl.text = _endTime;
@@ -582,11 +615,19 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  _showTimePicker() {
+  _showTimePicker(bool isStartTime) {
     return showTimePicker(
         initialEntryMode: TimePickerEntryMode.dial,
         context: context,
-        initialTime: TimeOfDay(
-            hour: TimeOfDay.now().hour, minute: TimeOfDay.now().minute));
+        builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child ?? Container()),
+        initialTime: isStartTime
+            ? TimeOfDay(
+                hour: int.parse(_startTime.split(":")[0]),
+                minute: int.parse(_startTime.split(":")[1]))
+            : TimeOfDay(
+                hour: int.parse(_endTime.split(":")[0]),
+                minute: int.parse(_endTime.split(":")[1])));
   }
 }

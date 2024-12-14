@@ -5,7 +5,8 @@ class FirestoreService {
   final CollectionReference events =
       FirebaseFirestore.instance.collection("events");
 
-  Future<void> addEvent({
+  Future<DocumentReference?> addEvent({
+    required String id,
     required String user,
     required String title,
     required DateTime date,
@@ -13,6 +14,7 @@ class FirestoreService {
     required String endTime,
     String? note,
     required bool reminder,
+    int? reminderID,
     String? reminderUrgency,
     int? reminderBefore,
     //required bool repeat,
@@ -20,7 +22,6 @@ class FirestoreService {
     //DateTime? repeatUntil
   }) async {
     try {
-      final id = const Uuid().v4();
       await events.doc(id).set({
         'user': user,
         'title': title.isNotEmpty ? title : "Untitled",
@@ -29,12 +30,14 @@ class FirestoreService {
         'end_time': endTime,
         'note': note ?? "",
         'reminder': reminder,
+        'reminder_id': reminderID,
         'reminder_urgency': reminder ? reminderUrgency : null,
         'reminder_before': reminder ? reminderBefore : null,
         //'repeat': repeat,
         //'repeat_interval': repeat ? repeatInterval : null,
         //'repeat_until': repeat ? repeatUntil : null
       });
+      return events.doc(id);
     } catch (e) {
       rethrow;
     }
@@ -49,6 +52,7 @@ class FirestoreService {
     required String endTime,
     String? note,
     required bool reminder,
+    int? reminderID,
     String? reminderUrgency,
     int? reminderBefore,
     //required bool repeat,
@@ -64,6 +68,7 @@ class FirestoreService {
         'end_time': endTime,
         'note': note ?? "",
         'reminder': reminder,
+        'reminder_id': reminderID,
         'reminder_urgency': reminder ? reminderUrgency : null,
         'reminder_before': reminder ? reminderBefore : null,
         //'repeat': repeat,

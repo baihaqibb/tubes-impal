@@ -3,7 +3,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_cal/services/alarm.dart';
 import 'package:simple_cal/services/firestore.dart';
+import 'package:simple_cal/services/notification.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_cal/widgets/input_field.dart';
@@ -22,8 +24,8 @@ class _EditPageState extends State<EditPage> {
   String _startTime = DateFormat.Hm().format(DateTime.now()).toString();
   String _endTime = DateFormat.Hm().format(DateTime.now()).toString();
   bool _reminderSwitch = true;
-  String _selectedUrgency = "Medium";
-  List<String> urgencyList = ["Weak", "Medium", "Strong"];
+  String _selectedUrgency = "Notify";
+  List<String> urgencyList = ["Notify", "Alarm"];
   int _selectedReminder = 15;
   List<int> reminderList = [5, 10, 15, 30, 60];
 //  bool _repeatSwitch = false;
@@ -31,7 +33,7 @@ class _EditPageState extends State<EditPage> {
 //  List<String> repeatList = ["Daily", "Weekly", "Monthly"];
 //  DateTime _selectedUntilDate = DateTime.now();
 
-  String _selectedUrgencyPrev = "Medium";
+  String _selectedUrgencyPrev = "Notify";
   int _selectedReminderPrev = 15;
 //  String _selectedRepeatPrev = "Daily";
 //  DateTime _selectedUntilDatePrev = DateTime.now();
@@ -73,7 +75,7 @@ class _EditPageState extends State<EditPage> {
     _endTime = data['end_time'];
     _noteControl.text = data['note'];
     _reminderSwitch = data['reminder'];
-    _selectedUrgency = data['reminder_urgency'] ?? 'medium';
+    _selectedUrgency = data['reminder_urgency'] ?? 'Notify';
     _urgencyControl.text = _selectedUrgency;
     _selectedReminder = data['reminder_before'] ?? 15;
     _reminderControl.text = _selectedReminder >= 60
@@ -329,9 +331,13 @@ class _EditPageState extends State<EditPage> {
                       },
                       child: const Text("Cancel")),
                   TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context);
                         try {
+                          if (widget.event['reminder_id'] != Null) {
+                            await NotificationService.unscheduleNotification(
+                                widget.event['reminder_id']);
+                          }
                           firestoreService.deleteEvent(event: widget.event);
                         } catch (e) {
                           showErrorSnackBar(e.toString());
@@ -375,7 +381,16 @@ class _EditPageState extends State<EditPage> {
         height: 50,
         child: ElevatedButton(
           iconAlignment: IconAlignment.start,
-          onPressed: () {
+          onPressed: () async {
+            String id = widget.event.id;
+            if (widget.event['reminder_id'] != Null) {
+              if (widget.event['reminder_urgency'] == "Notify") {
+                await NotificationService.unscheduleNotification(
+                    widget.event['reminder_id']);
+              } /* else if (widget.event['reminder_urgency'] == "Alarm") {
+                await AlarmService.stopAlarm(widget.event['reminder_id']);
+              } */
+            }
             try {
               firestoreService.editEvent(
                   event: widget.event,
@@ -386,11 +401,36 @@ class _EditPageState extends State<EditPage> {
                   endTime: _endTime.trim(),
                   note: _noteControl.text.trim(),
                   reminder: _reminderSwitch,
+                  reminderID: _reminderSwitch ? id.hashCode : null,
                   reminderUrgency: _urgencyControl.text.trim(),
                   reminderBefore: _selectedReminder); //,
               //repeat: _repeatSwitch,
               //repeatInterval: _repeatControl.text.trim(),
               //repeatUntil: _selectedUntilDate);
+              if (_reminderSwitch) {
+                if (_selectedUrgency == "Notify") {
+                  NotificationService.scheduleNotification(
+                      id.hashCode,
+                      _titleControl.text.trim(),
+                      "${_startTime.trim()} - ${_endTime.trim()}",
+                      _selectedDate
+                          .add(Duration(
+                              hours: int.parse(_startTime.split(":")[0]),
+                              minutes: int.parse(_startTime.split(":")[1])))
+                          .subtract(Duration(minutes: _selectedReminder)));
+                } /* else if (_selectedUrgency == "Alarm") {
+                  AlarmService.setAlarm(
+                      id: id.hashCode,
+                      title: _titleControl.text.trim(),
+                      body:
+                          "${_startTime.trim()} - ${_endTime.trim()}\n${_noteControl.text.trim()}",
+                      dateTime: _selectedDate
+                          .add(Duration(
+                              hours: int.parse(_startTime.split(":")[0]),
+                              minutes: int.parse(_startTime.split(":")[1])))
+                          .subtract(Duration(minutes: _selectedReminder)));
+                } */
+              }
             } catch (e) {
               showErrorSnackBar(e.toString());
             }
@@ -647,6 +687,9 @@ class _EditPageState extends State<EditPage> {
     return showTimePicker(
         initialEntryMode: TimePickerEntryMode.dial,
         context: context,
+        builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child ?? Container()),
         initialTime: isStartTime
             ? TimeOfDay(
                 hour: int.parse(_startTime.split(":")[0]),

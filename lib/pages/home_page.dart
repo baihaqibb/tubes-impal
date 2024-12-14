@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
       ][currentPageIndex],
       floatingActionButton: currentPageIndex == 1
           ? null
-          : FloatingActionButton.extended(
+          : FloatingActionButton(
               backgroundColor: primary,
               foregroundColor: const Color(0xFFFAFAFA),
               onPressed: () {
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                               calendarDate: today,
                             )));
               },
-              label: const Icon(Icons.add),
+              child: const Icon(Icons.add),
             ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -246,33 +246,34 @@ class _HomePageState extends State<HomePage> {
             margin:
                 const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
             child: TableCalendar(
-                weekendDays: const [DateTime.sunday],
-                locale: "en_US",
-                rowHeight: 80,
-                headerStyle: const HeaderStyle(
-                    formatButtonVisible: false, titleCentered: true),
-                availableGestures: AvailableGestures.horizontalSwipe,
-                onDaySelected: (day, focusedDay) {
-                  setState(() {
-                    today = day;
-                  });
-                },
-                selectedDayPredicate: (day) => isSameDay(day, today),
-                daysOfWeekStyle: const DaysOfWeekStyle(
-                    weekendStyle: TextStyle(color: Colors.red),
-                    weekdayStyle: TextStyle()),
-                calendarStyle: const CalendarStyle(
-                  weekNumberTextStyle: TextStyle(color: Colors.red),
-                  weekendTextStyle: TextStyle(color: Colors.red),
-                ),
-                startingDayOfWeek: StartingDayOfWeek.monday,
-                focusedDay: today,
-                firstDay: DateTime.utc(2000, 01, 01),
-                lastDay: DateTime.utc(2049, 12, 31)),
+              weekendDays: const [DateTime.sunday],
+              locale: "en_US",
+              rowHeight: 80,
+              headerStyle: const HeaderStyle(
+                  formatButtonVisible: false, titleCentered: true),
+              availableGestures: AvailableGestures.horizontalSwipe,
+              onDaySelected: (day, focusedDay) {
+                setState(() {
+                  today = day;
+                });
+              },
+              selectedDayPredicate: (day) => isSameDay(day, today),
+              daysOfWeekStyle: const DaysOfWeekStyle(
+                  weekendStyle: TextStyle(color: Colors.red),
+                  weekdayStyle: TextStyle()),
+              calendarStyle: const CalendarStyle(
+                weekNumberTextStyle: TextStyle(color: Colors.red),
+                weekendTextStyle: TextStyle(color: Colors.red),
+              ),
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              focusedDay: today,
+              firstDay: DateTime.utc(2000, 01, 01),
+              lastDay: DateTime.utc(2049, 12, 31),
+            ),
           ),
           const SizedBox(
             height: 100,
-          )
+          ),
         ],
       ),
     );

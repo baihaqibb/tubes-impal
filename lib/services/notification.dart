@@ -31,28 +31,33 @@ class NotificationService {
         ?.requestNotificationsPermission();
   }
 
-  static Future<void> showInstantNotification(String title, String body) async {
+  static Future<void> showInstantNotification(
+      int id, String title, String body) async {
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: AndroidNotificationDetails("channelId", "channelName",
             importance: Importance.high, priority: Priority.high),
         iOS: DarwinNotificationDetails());
 
     await flutterLocalNotificationsPlugin.show(
-        0, title, body, platformChannelSpecifics);
+        id, title, body, platformChannelSpecifics);
   }
 
   static Future<void> scheduleNotification(
-      String title, String body, DateTime scheduledDate) async {
+      int id, String title, String body, DateTime scheduledDate) async {
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
         android: AndroidNotificationDetails("channelId", "channelName",
             importance: Importance.high, priority: Priority.high),
         iOS: DarwinNotificationDetails());
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(0, title, body,
+    await flutterLocalNotificationsPlugin.zonedSchedule(id, title, body,
         tz.TZDateTime.from(scheduledDate, tz.local), platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle);
+  }
+
+  static Future<void> unscheduleNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }
