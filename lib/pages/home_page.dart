@@ -1,13 +1,13 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:date_picker_timeline/date_picker_widget.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/material.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_picker_timeline/date_picker_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import "package:simple_cal/pages/input_page.dart";
-import "package:simple_cal/services/firestore.dart";
-import "package:simple_cal/themes.dart";
-import "package:simple_cal/widgets/event_card.dart";
-import "package:table_calendar/table_calendar.dart";
+import 'package:simple_cal/pages/input_page.dart';
+import 'package:simple_cal/services/firestore.dart';
+import 'package:simple_cal/themes.dart';
+import 'package:simple_cal/widgets/event_card.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,15 +20,42 @@ class _HomePageState extends State<HomePage> {
   final FirestoreService firestoreService = FirestoreService();
 
   int currentPageIndex = 0;
-  DateTime today =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   final logoutSnackbar = const SnackBar(content: Text("User logged out"));
 
   final user = FirebaseAuth.instance.currentUser!;
 
-  DateTime _selectedDate =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  Map<DateTime, List<dynamic>> _eventsMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEventsFromFirestore();
+  }
+
+  void _loadEventsFromFirestore() async {
+    final snapshots = await firestoreService.events
+        .where('user', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    final events = snapshots.docs;
+    Map<DateTime, List<dynamic>> tempEventsMap = {};
+
+    for (var event in events) {
+      DateTime eventDate = (event['date'] as Timestamp).toDate();
+      if (tempEventsMap[eventDate] == null) {
+        tempEventsMap[eventDate] = [];
+      }
+      tempEventsMap[eventDate]?.add(event);
+    }
+
+    setState(() {
+      _eventsMap = tempEventsMap;
+    });
+  }
 
   int daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);
@@ -77,50 +104,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: <Widget>[
         _homePageCalendarView(),
-        Column(
-          children: [
-            _dateShown(),
-            _dateBar(),
-            StreamBuilder(
-                stream: firestoreService.events
-                    .where('user',
-                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                    .where('date', isEqualTo: Timestamp.fromDate(_selectedDate))
-                    .orderBy('start_time')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (!snapshot.hasData) {
-                    return const Text("There's nothing here...");
-                  }
-
-                  return Expanded(
-                      child: ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: EventCard(
-                              event: snapshot.data!.docs[index],
-                              title: snapshot.data!.docs[index]['title'],
-                              note: snapshot.data!.docs[index]['note'],
-                              time: snapshot.data!.docs[index]['start_time'] +
-                                  " - " +
-                                  snapshot.data!.docs[index]['end_time'],
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  ));
-                })
-          ],
-        )
+        _homePageScheduleView()
       ][currentPageIndex],
       floatingActionButton: currentPageIndex == 1
           ? null
@@ -151,6 +135,52 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  Column _homePageScheduleView() {
+    return Column(
+        children: [
+          _dateShown(),
+          _dateBar(),
+          StreamBuilder(
+              stream: firestoreService.events
+                  .where('user', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                  .where('date', isEqualTo: Timestamp.fromDate(_selectedDate))
+                  .orderBy('start_time')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (!snapshot.hasData) {
+                  return const Text("There's nothing here...");
+                }
+
+                return Expanded(
+                    child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: EventCard(
+                            event: snapshot.data!.docs[index],
+                            title: snapshot.data!.docs[index]['title'],
+                            note: snapshot.data!.docs[index]['note'],
+                            time: snapshot.data!.docs[index]['start_time'] +
+                                " - " +
+                                snapshot.data!.docs[index]['end_time'],
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                ));
+              })
+        ],
+      );
   }
 
   Container _dateBar() {
@@ -268,17 +298,17 @@ class _HomePageState extends State<HomePage> {
                 startingDayOfWeek: StartingDayOfWeek.monday,
                 focusedDay: today,
                 firstDay: DateTime.utc(2000, 01, 01),
-                lastDay: DateTime.utc(2049, 12, 31)),
+                lastDay: DateTime.utc(2049, 12, 31),
+                eventLoader: (day) {
+                  return _eventsMap[day] ?? [];
+                }),
           ),
-          const SizedBox(
-            height: 100,
-          )
         ],
       ),
     );
   }
 
-  AppBar homePageAppBar() {
+   AppBar homePageAppBar() {
     return AppBar(
       backgroundColor: primary,
       title: const Text(

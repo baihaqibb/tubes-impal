@@ -4,10 +4,10 @@ import 'package:simple_cal/firebase_options.dart';
 import 'package:simple_cal/notifications/notification.dart';
 import 'package:simple_cal/pages/auth_page.dart';
 import 'package:simple_cal/pages/login_page.dart';
-//import 'package:simple_cal/pages/register_page.dart';
-//import 'package:simple_cal/pages/edit_page.dart';
-//import 'package:simple_cal/pages/input_page.dart';
-//import 'package:simple_cal/pages/home_page.dart';
+import 'package:simple_cal/pages/register_page.dart';
+import 'package:simple_cal/pages/edit_page.dart';
+import 'package:simple_cal/pages/input_page.dart';
+import 'package:simple_cal/pages/home_page.dart';
 import 'package:simple_cal/themes.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
