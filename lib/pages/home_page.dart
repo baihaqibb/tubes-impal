@@ -77,50 +77,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: <Widget>[
         _homePageCalendarView(),
-        Column(
-          children: [
-            _dateShown(),
-            _dateBar(),
-            StreamBuilder(
-                stream: firestoreService.events
-                    .where('user',
-                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                    .where('date', isEqualTo: Timestamp.fromDate(_selectedDate))
-                    .orderBy('start_time')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (!snapshot.hasData) {
-                    return const Text("There's nothing here...");
-                  }
-
-                  return Expanded(
-                      child: ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: EventCard(
-                              event: snapshot.data!.docs[index],
-                              title: snapshot.data!.docs[index]['title'],
-                              note: snapshot.data!.docs[index]['note'],
-                              time: snapshot.data!.docs[index]['start_time'] +
-                                  " - " +
-                                  snapshot.data!.docs[index]['end_time'],
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  ));
-                })
-          ],
-        )
+        _homePageScheduleView()
       ][currentPageIndex],
       floatingActionButton: currentPageIndex == 1
           ? null
@@ -150,6 +107,53 @@ class _HomePageState extends State<HomePage> {
           NavigationDestination(icon: Icon(Icons.schedule), label: "Schedule")
         ],
       ),
+    );
+  }
+
+  Column _homePageScheduleView() {
+    return Column(
+      children: [
+        _dateShown(),
+        _dateBar(),
+        StreamBuilder(
+            stream: firestoreService.events
+                .where('user',
+                    isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                .where('date', isEqualTo: Timestamp.fromDate(_selectedDate))
+                .orderBy('start_time')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Text("There's nothing here...");
+              }
+
+              return Expanded(
+                  child: ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: EventCard(
+                          event: snapshot.data!.docs[index],
+                          title: snapshot.data!.docs[index]['title'],
+                          note: snapshot.data!.docs[index]['note'],
+                          time: snapshot.data!.docs[index]['start_time'] +
+                              " - " +
+                              snapshot.data!.docs[index]['end_time'],
+                        ),
+                      )
+                    ],
+                  );
+                },
+              ));
+            })
+      ],
     );
   }
 
@@ -261,9 +265,15 @@ class _HomePageState extends State<HomePage> {
               daysOfWeekStyle: const DaysOfWeekStyle(
                   weekendStyle: TextStyle(color: Colors.red),
                   weekdayStyle: TextStyle()),
-              calendarStyle: const CalendarStyle(
-                weekNumberTextStyle: TextStyle(color: Colors.red),
-                weekendTextStyle: TextStyle(color: Colors.red),
+              calendarStyle: CalendarStyle(
+                todayDecoration: BoxDecoration(
+                    color: const Color(0x00000000),
+                    border: Border.all(color: primary, width: 2),
+                    shape: BoxShape.circle),
+                selectedDecoration:
+                    const BoxDecoration(color: primary, shape: BoxShape.circle),
+                weekNumberTextStyle: const TextStyle(color: Colors.red),
+                weekendTextStyle: const TextStyle(color: Colors.red),
               ),
               startingDayOfWeek: StartingDayOfWeek.monday,
               focusedDay: today,

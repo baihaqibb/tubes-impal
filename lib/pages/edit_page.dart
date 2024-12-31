@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_cal/services/alarm.dart';
+//import 'package:simple_cal/services/alarm.dart';
 import 'package:simple_cal/services/firestore.dart';
 import 'package:simple_cal/services/notification.dart';
 import 'package:simple_cal/themes.dart';
@@ -288,10 +288,21 @@ class _EditPageState extends State<EditPage> {
           isExpanded: true,
           padding: const EdgeInsets.only(right: 10),
           items: urgencyList.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value.toString(),
-              child: Text(value.toString()),
-            );
+            if (value == "Notify") {
+              return DropdownMenuItem<String>(
+                value: value.toString(),
+                child: Text(value.toString()),
+              );
+            } else {
+              return DropdownMenuItem<String>(
+                value: value.toString(),
+                child: Text(
+                  value.toString(),
+                  style: TextStyle(color: Colors.grey),
+                ),
+                enabled: false,
+              );
+            }
           }).toList(),
           onChanged: (String? newValue) {
             setState(() {
@@ -334,7 +345,7 @@ class _EditPageState extends State<EditPage> {
                       onPressed: () async {
                         Navigator.pop(context);
                         try {
-                          if (widget.event['reminder_id'] != Null) {
+                          if (widget.event['reminder_id'] != null) {
                             await NotificationService.unscheduleNotification(
                                 widget.event['reminder_id']);
                           }
